@@ -21,8 +21,11 @@
  */
 package ocr;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit tests for the OCR translator.
@@ -30,11 +33,34 @@ import org.junit.jupiter.api.Test;
  */
 class OCRTranslatorTest
 {
+	static OCRTranslator trns;
 
-	@Test
-	void test()
-	{
-		fail("Not yet implemented");
+	@BeforeAll
+	static void init() {
+		trns = new OCRTranslator();
 	}
 
+	/**
+	 * TEST 1: whether we can correctly match a digit to a string-encoded digit.
+	 */
+	@Test
+	void digitMatching() {
+		// Make sure that checking works
+		for (int i = 0; i <= 9; i++)
+			assertTrue(trns.digitMatches(i, trns.digits[i]));
+
+		// Check every single other possible combination to make sure that other possibilities don't work. Yes, there's
+		// a slightly complex loop in test code, but it's necessary to test all possible combinations.
+		for (int i = 0; i <= 9; i++) {
+			for (int offset = 1; offset <= 9; offset++) {
+				assertFalse(trns.digitMatches(i, trns.digits[(i+offset) % 10]));
+			}
+		}
+
+		// Idiot checks to make sure that invalid stuff is rejected out of hand
+		assertFalse(trns.digitMatches(10, trns.digits[0]));
+		assertFalse(trns.digitMatches(-1, trns.digits[0]));
+		assertFalse(trns.digitMatches(9, new String[]{}));
+		assertFalse(trns.digitMatches(9, new String[]{"", "", "", ""}));
+	}
 }

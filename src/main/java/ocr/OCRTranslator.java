@@ -29,13 +29,66 @@ package ocr;
  */
 public class OCRTranslator
 {
+	final String[][] digits;
+
 	/**
 	 * Default constructor. You may not add parameters to this. This is
 	 * the only constructor for this class and is what the master tests will use.
 	 */
 	public OCRTranslator()
 	{
-		// TODO Auto-generated constructor stub
+		digits = new String[][]{
+				{
+						" _ ",
+						"| |",
+						"|_|"
+				},
+				{
+						" ",
+						"|",
+						"|"
+				},
+				{
+						" _ ",
+						" _|",
+						"|_ "
+				},
+				{
+						" _ ",
+						" _|",
+						" _|"
+				},
+				{
+						"   ",
+						"|_|",
+						"  |"
+				},
+				{
+						" _ ",
+						"|_ ",
+						" _|"
+				},
+				{
+						" _ ",
+						"|_ ",
+						"|_|"
+				},
+				{
+						"_ ",
+						" |",
+						" |"
+				},
+				{
+						" _ ",
+						"|_|",
+						"|_|"
+				},
+				{
+						" _ ",
+						"|_|",
+						"  |"
+				}
+		};
 	}
 	
 	/**
@@ -50,5 +103,26 @@ public class OCRTranslator
 	{
 		// To be implemented
 		return null;
+	}
+
+	/**
+	 * Checks to see if a digit string matches the given diget
+	 * @param digit Number to check against, 0-9
+	 * @param digitStr Array-format digit string, three elements long and with strings of constant width.
+	 * @return True if the digit matches, false otherwise.
+	 */
+	protected boolean digitMatches(final int digit, String[] digitStr) {
+		if (digit < 0 || digit > 9)
+			return false;
+		if (digitStr.length < 1 || digitStr.length > 3 || digitStr[0].length() > 3 || digitStr[0].isEmpty())
+			return false;
+
+		final String[] checkDigit = digits[digit];
+		for (int i = 0; i < 3; i++) {
+			if (!digitStr[i].equals(checkDigit[i]))
+				return false;
+		}
+
+		return true;
 	}
 }
