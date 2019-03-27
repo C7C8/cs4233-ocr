@@ -24,6 +24,8 @@ package ocr;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -34,9 +36,30 @@ class OCRTranslatorTest
 {
 	static OCRTranslator trns;
 
+	/**
+	 * Init function that just creates a reusable OCRTranslator object
+	 */
 	@BeforeAll
 	static void init() {
 		trns = new OCRTranslator();
+	}
+
+	/**
+	 * Helper concatenate digits to form strings of digits (used for testing tokenization).
+	 * @param whitespace Whitespace to put between each digit
+	 * @param digits Digits to insert into string
+	 */
+	static String[] concatDigits(int whitespace, String[] ... digits) {
+		String[] str = new String[]{"", "", ""};
+		for (String[] digit: digits) {
+			for (int i = 0; i < 3; i++) {
+				str[i] += digit[i];
+				for (int j = 0; j < whitespace; j++)
+					str[i] += " ";
+			}
+		}
+
+		return str;
 	}
 
 	/**
@@ -73,5 +96,30 @@ class OCRTranslatorTest
 
 		assertThrows(OCRException.class, () -> trns.scanDigit(new String[]{"", "", ""}));
 		assertThrows(OCRException.class, () -> trns.scanDigit(new String[]{"_", "_", "_"}));
+	}
+
+	/**
+	 * TEST 3: Make sure we can tokenize digit strings correctly
+	 */
+	@Test
+	void tokenization() {
+		String[] str = concatDigits(1, trns.digits[1], trns.digits[7], trns.digits[0], trns.digits[1]);
+		ArrayList<String[]> res = trns.tokenize(str);
+
+		// Basic check with no extra whitespace
+		assertEquals(4, res.size());
+		assertEquals(1, trns.scanDigit(res.get(0)));
+		assertEquals(7, trns.scanDigit(res.get(1)));
+		assertEquals(0, trns.scanDigit(res.get(2)));
+		assertEquals(1, trns.scanDigit(res.get(3)));
+
+		// Now use a ridiculous amount of whitespace and make sure we get the same results
+		str = concatDigits(15, trns.digits[8], trns.digits[4], trns.digits[7], trns.digits[2]);
+		res = trns.tokenize(str);
+		assertEquals(4, res.size());
+		assertEquals(8, trns.scanDigit(res.get(0)));
+		assertEquals(4, trns.scanDigit(res.get(1)));
+		assertEquals(7, trns.scanDigit(res.get(2)));
+		assertEquals(2, trns.scanDigit(res.get(3)));
 	}
 }

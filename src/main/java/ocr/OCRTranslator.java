@@ -21,6 +21,8 @@
  */
 package ocr;
 
+import java.util.ArrayList;
+
 /**
  * This class has a single method that will translate OCR digits to a string of
  * text digits that correspond to the OCR digits.
@@ -140,5 +142,40 @@ public class OCRTranslator
 		}
 
 		throw new OCRException("Invalid digit");
+	}
+
+	/**
+	 * TEST 3: Tokenize a string into digits, eliminating whitespace
+	 * @param digits 3-length array containing parseable digits
+	 * @return Arraylist of digits
+	 * @throws OCRException Thrown if string cannot be tokenized
+	 */
+	protected ArrayList<String[]> tokenize(String[] digits) {
+		if (digits[0].length() != digits[1].length() || digits[0].length() != digits[2].length())
+			throw new OCRException("Line lengths don't match");
+
+		ArrayList<String[]> ret = new ArrayList<>();
+		int start = 0; // Start position to slice from
+		for (int i = 0; i < digits[0].length(); i++) {
+			// Tokenization algorithm is simple: keep track of a location to start slicing from, set when a column
+			// does not contain all spaces. When i - start is 3 or another column of whitespace is encountered, the
+			// the digit is sliced out, added to the return list, and the start counter is set to i
+			if (digits[0].charAt(i) == ' ' && digits[1].charAt(i) == ' ' && digits[2].charAt(i) == ' ') {
+				// Splice out digit
+				if (start < i) {
+					ret.add(new String[] {
+							digits[0].substring(start, i),
+							digits[1].substring(start, i),
+							digits[2].substring(start, i)
+					}); // Braces and parens? What is this, JavaSCRIPT?
+					start = i;
+				}
+
+				start++;
+			}
+
+		}
+
+		return ret;
 	}
 }
