@@ -24,8 +24,7 @@ package ocr;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests for the OCR translator.
@@ -62,5 +61,17 @@ class OCRTranslatorTest
 		assertFalse(trns.digitMatches(-1, trns.digits[0]));
 		assertFalse(trns.digitMatches(9, new String[]{}));
 		assertFalse(trns.digitMatches(9, new String[]{"", "", "", ""}));
+	}
+
+	/**
+	 * TEST 2: whether, given a digit in string form, it can be parsed correctly
+	 */
+	@Test
+	void digitScanning() {
+		for (int i = 0; i <= 9; i++)
+			assertEquals(i, trns.scanDigit(trns.digits[i]));
+
+		assertThrows(OCRException.class, () -> trns.scanDigit(new String[]{"", "", ""}));
+		assertThrows(OCRException.class, () -> trns.scanDigit(new String[]{"_", "_", "_"}));
 	}
 }

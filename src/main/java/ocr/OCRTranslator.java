@@ -97,7 +97,7 @@ public class OCRTranslator
 	 * @param s1 the top row of the OCR input
 	 * @param s2 the middle row of the OCR input
 	 * @param s3 the third row of the OCR input
-	 * @return a String containing the digits corresponding
+	 * @return a String containing the digits corresponding tot he
 	 */
 	public String translate(String s1, String s2, String s3)
 	{
@@ -124,5 +124,21 @@ public class OCRTranslator
 		}
 
 		return true;
+	}
+
+	/**
+	 * Scans a string-form digit and returns the corresponding int if something matches
+	 * @param digitStr String-form digit, basically just a 3-length array of Strings
+	 * @return Digit
+	 * @throws OCRException if digit does not match
+	 */
+	protected int scanDigit(String[] digitStr) {
+		for (int i = 0; i <= 9; i++) {
+			if (digitMatches(i, digitStr)) {
+				return i;
+			}
+		}
+
+		throw new OCRException("Invalid digit");
 	}
 }

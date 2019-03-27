@@ -1,5 +1,4 @@
 1. Add 10 hardcoded arrays of strings (max size 3x3), implement matching for similar string arrays
 2. Add helper function to match string digits to actual digits
-3. Implement conversion of arraylist of digits to integer containing those digits
-4. Implement tokenization of strings into OCR-able digits
-5. Implement final loop to run OCR and return digits from translate()
+3. Implement tokenization of strings into OCR-able digits
+4. Implement final loop to run OCR and return digits from translate()
