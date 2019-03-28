@@ -56,9 +56,9 @@ public class OCRTranslator
 						"|_ "
 				},
 				{
-						" _ ",
-						" _|",
-						" _|"
+						"_ ",
+						"_|",
+						"_|"
 				},
 				{
 						"   ",
@@ -101,10 +101,17 @@ public class OCRTranslator
 	 * @param s3 the third row of the OCR input
 	 * @return a String containing the digits corresponding tot he
 	 */
-	public String translate(String s1, String s2, String s3)
-	{
-		// To be implemented
-		return null;
+	public String translate(String s1, String s2, String s3) {
+		if (s1 == null || s2 == null || s3 == null)
+			throw new OCRException("One or more inputs are null");
+
+		ArrayList<String[]> digits = tokenize(new String[]{s1, s2, s3});
+		StringBuilder ret = new StringBuilder();
+		for (String[] digit: digits) {
+			ret.append(scanDigit(digit));
+		}
+
+		return ret.toString();
 	}
 
 	/**

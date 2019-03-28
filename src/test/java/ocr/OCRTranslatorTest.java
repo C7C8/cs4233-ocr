@@ -23,8 +23,12 @@ package ocr;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.ArrayList;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,11 +53,11 @@ class OCRTranslatorTest
 	 * @param whitespace Whitespace to put between each digit
 	 * @param digits Digits to insert into string
 	 */
-	static String[] concatDigits(int whitespace, String[] ... digits) {
+	static String[] concatDigits(int whitespace, int ... digits) {
 		String[] str = new String[]{"", "", ""};
-		for (String[] digit: digits) {
+		for (int digit: digits) {
 			for (int i = 0; i < 3; i++) {
-				str[i] += digit[i];
+				str[i] += trns.digits[digit][i];
 				for (int j = 0; j < whitespace; j++)
 					str[i] += " ";
 			}
@@ -103,7 +107,7 @@ class OCRTranslatorTest
 	 */
 	@Test
 	void tokenization() {
-		String[] str = concatDigits(1, trns.digits[1], trns.digits[7], trns.digits[0], trns.digits[1]);
+		String[] str = concatDigits(1, 1, 7, 0, 1);
 		ArrayList<String[]> res = trns.tokenize(str);
 
 		// Basic check with no extra whitespace
@@ -114,12 +118,43 @@ class OCRTranslatorTest
 		assertEquals(1, trns.scanDigit(res.get(3)));
 
 		// Now use a ridiculous amount of whitespace and make sure we get the same results
-		str = concatDigits(15, trns.digits[8], trns.digits[4], trns.digits[7], trns.digits[2]);
+		str = concatDigits(15, 8, 4, 7, 2);
 		res = trns.tokenize(str);
 		assertEquals(4, res.size());
 		assertEquals(8, trns.scanDigit(res.get(0)));
 		assertEquals(4, trns.scanDigit(res.get(1)));
 		assertEquals(7, trns.scanDigit(res.get(2)));
 		assertEquals(2, trns.scanDigit(res.get(3)));
+
+		// Make sure that bad strings are rejected
+		assertThrows(OCRException.class, () -> trns.tokenize(new String[]{"", "| |", "|_|"})) ;
+	}
+
+	/**
+	 * TEST 4 (part 1): Overall translation (for strings that should work)
+	 */
+	@ParameterizedTest
+	@MethodSource("digitsProvider")
+	void translation1(String result, String[] digits) {
+		assertEquals(result, trns.translate(digits[0], digits[1], digits[2]));
+	}
+
+	/**
+	 * TEST 4 (part 2): Overall translation (for strings that *don't* work)
+	 */
+	@Test
+	void translation2() {
+		assertThrows(OCRException.class, () -> trns.translate("Invalid", "string", "here"));
+		assertThrows(OCRException.class, () -> trns.translate(null, null, null));
+	}
+
+	static Stream<Arguments> digitsProvider() {
+		return Stream.of(
+				Arguments.of("1701", concatDigits(1, 1, 7, 0, 1)),
+				Arguments.of("0123456789", concatDigits(1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9)),
+				Arguments.of("8472", concatDigits(5, 8, 4, 7, 2)),
+				Arguments.of("", concatDigits(15)),
+				Arguments.of("", new String[]{"", "", ""})
+		);
 	}
 }
